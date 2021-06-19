@@ -3,6 +3,9 @@ const express = require('express')
 const socketio = require('socket.io')
 const http = require('http')
 
+//Importa as funções para controle de usuário
+const { addUser, removeUser, getUser, getUserInRoom} = require('./user')
+
 //Define a porta onde irá rodar o servidor
 const PORT = process.env.PORT || 5000
 
@@ -22,15 +25,30 @@ const io = socketio(server, corsOptions)
 
 //Irá mostrar uma mensagem no console caso algum usuário tenha se conectado ou desconectado
 io.on('connection', (socket) => {
-    console.log('Um usuário se conectou')
-
     //Quando o usuario se conectar é passado os dados de nome e sala para o server-side
     socket.on('join', ({name, room}, callback) => {
-        console.log(name, room)
+        const {error, user} = addUser({id:socket.id, name, room})
 
+        if(error) return callback(error)
+
+    //Envia uma mensagem ao usuário quando ele entra na sala e envia uma mensagem geral dizendo que um novo usuário se juntou a sala
+        socket.emit('message', {user: 'admin', text:`${user.name}, bem vindo a sala ${user.room}`})
+        socket.broadcast.to(user.room).emit('message', {user: 'admin', text:`${user.name} entrou na sala`})
+
+        socket.join(user.room)
+
+        callback()
     })
 
-//Quando um usuário se desconectar será mostrado essa mensagem
+    socket.on('sendMessage', (message, callback)=>{
+        const user = getUser(socket.id)
+
+        io.to(user.room).emit('message', {user: user.name, text: message})
+
+        callback()
+    })
+
+    //Quando um usuário se desconectar será mostrado essa mensagem
     socket.on('disconnect', ()=>{
         console.log('Um usuário se desconectou')
     })
