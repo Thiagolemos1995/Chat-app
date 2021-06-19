@@ -4,7 +4,7 @@ const socketio = require('socket.io')
 const http = require('http')
 
 //Importa as funções para controle de usuário
-const { addUser, removeUser, getUser, getUserInRoom} = require('./user')
+const { addUser, removeUser, getUser, getUsersInRoom} = require('./user')
 
 //Define a porta onde irá rodar o servidor
 const PORT = process.env.PORT || 5000
@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
 
         socket.join(user.room)
 
-        io.to(user.room).emit('roomData', {room:user.room, users:getUserInRoom(user.room)})
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
         callback()
     })
@@ -51,15 +51,15 @@ io.on('connection', (socket) => {
     })
 
     //Quando um usuário se desconectar será mostrado essa mensagem
-    socket.on('disconnect', ()=>{
-        const user = removeUser(socket.id)
-
-        if(user){
-            io.to(user.room).emit('message', {user:'admin', text: `${user.name} deixou a sala`})
-            io.to(user.room).emit('roomData', {room:user.room, users:getUserInRoom(user.room)})
+    socket.on('disconnect', () => {
+        const user = removeUser(socket.id);
+    
+        if(user) {
+          io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
+          io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
         }
+      })
     })
-})
 
 app.use(router)
 
