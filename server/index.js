@@ -37,6 +37,8 @@ io.on('connection', (socket) => {
 
         socket.join(user.room)
 
+        io.to(user.room).emit('roomData', {room:user.room, users:getUserInRoom(user.room)})
+
         callback()
     })
 
@@ -50,7 +52,12 @@ io.on('connection', (socket) => {
 
     //Quando um usuário se desconectar será mostrado essa mensagem
     socket.on('disconnect', ()=>{
-        console.log('Um usuário se desconectou')
+        const user = removeUser(socket.id)
+
+        if(user){
+            io.to(user.room).emit('message', {user:'admin', text: `${user.name} deixou a sala`})
+            io.to(user.room).emit('roomData', {room:user.room, users:getUserInRoom(user.room)})
+        }
     })
 })
 
