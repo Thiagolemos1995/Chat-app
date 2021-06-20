@@ -1,3 +1,8 @@
+button:hover {
+  background: #6b4b77;
+  transition: background 0.2s;
+}
+
 .form {
   display: flex;
   border-top: 2px solid #D3D3D3;
@@ -19,7 +24,7 @@ input:focus, textarea:focus, select:focus{
   color: #fff !important;
   text-transform: uppercase;
   text-decoration: none;
-  background: #2979FF;
+  background: #a775bb;;
   padding: 20px;
   display: inline-block;
   border: none;
