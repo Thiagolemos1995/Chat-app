@@ -4,4 +4,4 @@
 
 A aplicação possui o server-side e client-side.
 
-## Para rodar a aplicação é necessário utilizar `npm start` em ambos os lados (client e server)
+Para rodar a aplicação é necessário utilizar `npm start` em ambos os lados (client e server)
